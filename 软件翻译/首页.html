@@ -1,0 +1,1347 @@
+
+                <!DOCTYPE html>
+                <html lang="zh">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>首页</title>
+                  <style>
+                    *,
+                    *::before,
+                    *::after {
+                      box-sizing: border-box;
+                      margin: 0;
+                    }
+                    .iframe-outer {
+                      position: fixed;
+                      top: 0;
+                      left: 0;
+                      bottom: 0;
+                      right: 0;
+                      display: flex;
+                      justify-content: center;
+                      background-color: #E0E0E0;
+                    }
+                    .iframe-wrapper {
+                      width: 100%;
+                      height: 100%;
+                      margin: 0 auto;
+                      transform-origin: center top;
+                      flex-shrink: 0;
+                    }
+                    #dynamicIframe {
+                      border: none;
+                      width: 100%;
+                      height: 100%;
+                    }
+                  </style>
+                  <script>
+                const width = 1920
+                const height = 1080
+                const resolutionRatio = width && height ? width / height : 1
+                const pageNameMap = {
+                  'home': '首页',
+    'login_page': '登录页',
+    'register_page': '注册页',
+    'profile_settings_page': '个人设置页'
+                }
+                function setIframeSize(w, h) {
+                  const currentContainerRadio = w / h
+                  let widthValue = w
+                  let heightValue = h
+                  let zoom = 1
+                  if (currentContainerRadio > resolutionRatio) {
+                    widthValue = h * resolutionRatio
+                    heightValue = h
+                  } else {
+                    widthValue = w
+                    heightValue = w / resolutionRatio
+                  }
+                  zoom = width ? widthValue / width : 1
+                  return {
+                    width: widthValue / zoom + 'px',
+                    height: heightValue / zoom + 'px',
+                    zoom,
+                  }
+                }
+                function adjustIframeSize() {
+                  const iframeWrapper = document.querySelector(".iframe-wrapper")
+                  const { width, height, zoom } = setIframeSize(window.innerWidth, window.innerHeight)
+                  iframeWrapper.style.height = height
+                  iframeWrapper.style.width = width
+                  iframeWrapper.style.transform = 'scale(' + zoom + ')'
+                }
+                function sanitizeFilename(name) {
+                  return name.replace(/[\/:*?"<>|]/g, '_')
+                }
+                function handlePostMessage(event) {
+                  if (!event.data) {
+                    return
+                  }
+                  const { type, targetPageId } = event.data
+                  const targetPageName = pageNameMap[targetPageId]
+                  if (type === "iframeNavigation" && targetPageId && targetPageName) {
+                    window.location.href = targetPageName + '.html'
+                  }
+                }
+                window.addEventListener('message', handlePostMessage)
+                window.onload = adjustIframeSize
+                window.onresize = adjustIframeSize
+                window.onunload = () => {
+                  window.removeEventListener('message', handlePostMessage)
+                }
+              </script>
+                </head>
+                <body>
+                  <div class="iframe-outer">
+                    <div class="iframe-wrapper">
+                      <iframe id="dynamicIframe" srcdoc='<html lang="zh" data-theme="light"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能翻译 - 即时、精准、智能翻译</title>
+    <link href="./assets/static/uxbot/daisyui@5.css" rel="stylesheet" type="text/css">
+    <script src="./assets/static/uxbot/tailwind-browser@4.js"></script>
+    <link href="./assets/static/uxbot/daisyui-themes.css" rel="stylesheet" type="text/css">
+    <script src="./assets/3/3.1.1/iconify.min.js"></script>
+    <style>
+/* CSS code for common usage*/
+/* daisyUI Theme Variables Customization for Translation Website
+* Based on the light theme with Apple-like minimalist design principles
+* Focus on clarity, readability, and pure representation of content
+*/
+:root {
+/* Primary colors - Subtle, muted blue for key interactive elements */
+--color-primary: rgba(59, 130, 246, 1); /* Clean blue for buttons and links */
+--color-primary-content: rgba(255, 255, 255, 1);
+
+/* Secondary/Accent - Warm subtle accent for highlights */
+--color-secondary: rgba(99, 102, 241, 1); /* Indigo for secondary actions */
+--color-secondary-content: rgba(255, 255, 255, 1);
+
+/* Accent - Teal for special features and translation results */
+--color-accent: rgba(16, 185, 129, 1); /* Success green for translation completion */
+--color-accent-content: rgba(255, 255, 255, 1);
+
+/* Base backgrounds - Pure white space design */
+--color-base-100: rgba(255, 255, 255, 1); /* Pure white for content areas */
+--color-base-200: rgba(249, 250, 251, 1); /* Very light gray for subtle panels */
+--color-base-300: rgba(243, 244, 246, 1); /* Light gray for borders and separators */
+
+/* Semantic colors - Muted but clear */
+--color-success: rgba(34, 197, 94, 1); /* Fresh green for success states */
+--color-warning: rgba(251, 191, 36, 1); /* Warm amber for warnings */
+--color-error: rgba(239, 68, 68, 1); /* Clear red for errors */
+--color-info: rgba(59, 130, 246, 1); /* Blue for informational messages */
+
+/* Border radius for modern, friendly feel */
+--radius-box: 0.5rem; /* 8px for cards and containers */
+--radius-field: 0.375rem; /* 6px for form fields */
+--radius-selector: 0.375rem; /* 6px for buttons and selectors */
+
+/* Minimal border for clean separation */
+--border: 1px;
+}
+
+/* Additional custom styles for translation website */
+.transition-smooth {
+transition: all 0.3s ease-in-out;
+}
+
+.shadow-minimal {
+box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shadow-elegant {
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Header positioning for sticky behavior */
+.header-sticky {
+position: sticky;
+top: 0;
+z-index: 1000;
+backdrop-filter: blur(8px);
+background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Typography enhancements for readability */
+.font-clean {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+.text-spacing {
+letter-spacing: 0.025em;
+line-height: 1.6;
+}
+
+/* Focus states for accessibility and Apple-like interaction */
+.focus-visible:focus-visible {
+outline: 2px solid var(--color-accent);
+outline-offset: 2px;
+border-radius: var(--radius-field);
+}
+
+/* White space emphasis for minimalist design */
+.section-spacing {
+padding: 3rem 1.5rem;
+}
+
+.content-spacing {
+max-width: 1200px;
+margin: 0 auto;
+}
+
+/* Translation-specific styles */
+.translation-container {
+background: linear-gradient(145deg, var(--color-base-100) 0%, rgba(249, 250, 251, 0.5) 100%);
+border: var(--border) solid var(--color-base-300);
+border-radius: var(--radius-box);
+}
+
+.language-selector {
+transition: all 0.2s ease;
+border: var(--border) solid var(--color-base-300);
+}
+
+.language-selector:hover {
+border-color: var(--color-primary);
+transform: translateY(-1px);
+box-shadow: var(--shadow-elegant);
+}
+</style> <style>
+/* 翻译页面专用样式 */
+
+/* 语言选择按钮激活状态 */
+.language-btn.active {
+background-color: var(--color-primary);
+color: var(--color-primary-content);
+border-color: var(--color-primary);
+transform: translateY(-1px);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* 翻译容器悬停效果 */
+.translation-container:hover {
+box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+border-color: var(--color-primary);
+}
+
+/* 文本区域焦点状态 */
+.textarea:focus {
+border-color: var(--color-primary);
+box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+outline: none;
+}
+
+/* 字符计数器样式 */
+#char-count {
+font-variant-numeric: tabular-nums;
+}
+
+/* 翻译按钮悬停效果 */
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.3);
+}
+
+/* 功能卡片动画 */
+.card:hover {
+transform: translateY(-4px);
+}
+
+/* 图标容器动画 */
+.w-16.h-16:hover {
+transform: scale(1.1);
+transition: transform 0.2s ease-in-out;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+.section-spacing {
+padding: 2rem 1rem;
+}
+
+.translation-container {
+padding: 1.5rem;
+}
+
+.card-body {
+padding: 1.5rem;
+}
+}
+
+/* 成功提示动画 */
+.toast-success {
+animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+from {
+transform: translateX(100%);
+opacity: 0;
+}
+to {
+transform: translateX(0);
+opacity: 1;
+}
+}
+
+/* 加载状态样式 */
+.btn.loading {
+pointer-events: none;
+}
+
+.btn.loading .iconify {
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+from {
+transform: rotate(0deg);
+}
+to {
+transform: rotate(360deg);
+}
+}
+
+/* 渐变背景优化 */
+#hero-section {
+background: linear-gradient(135deg, 
+rgba(255, 255, 255, 1) 0%, 
+rgba(249, 250, 251, 0.8) 50%, 
+rgba(243, 244, 246, 0.6) 100%);
+}
+
+/* 文本选择样式 */
+::selection {
+background-color: var(--color-primary);
+color: var(--color-primary-content);
+}
+
+/* 滚动条样式 */
+.textarea::-webkit-scrollbar {
+width: 6px;
+}
+
+.textarea::-webkit-scrollbar-track {
+background: var(--color-base-200);
+border-radius: 3px;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+background: var(--color-base-300);
+border-radius: 3px;
+}
+
+.textarea::-webkit-scrollbar-thumb:hover {
+background: var(--color-primary);
+}
+</style>
+  <script src="./assets/static/uxbot/25_6/holder.js"></script></head>
+  <body class="bg-base-100 flex flex-col min-h-screen font-clean">
+    <div data-section-id="common_header" data-section-type="common_header" class="navbar bg-base-100 shadow-minimal header-sticky font-clean">
+<!-- Mobile Menu Button -->
+<div class="navbar-start lg:hidden">
+<button class="btn btn-square btn-ghost focus-visible" onclick="toggleMobileMenu()">
+<span class="iconify" data-icon="heroicons:bars-3" data-width="24"></span>
+</button>
+</div>
+
+<!-- Logo and Brand -->
+<div class="navbar-start hidden lg:flex">
+<a class="btn btn-ghost text-xl font-bold text-primary focus-visible" onclick="navigateTo(&#39;home&#39;)">
+<span class="iconify text-accent" data-icon="heroicons:language" data-width="32"></span>
+<span class="text-spacing">智能翻译</span>
+</a>
+</div>
+
+<!-- Main Navigation -->
+<div class="navbar-center hidden lg:flex">
+<ul class="menu menu-horizontal px-1 text-sm">
+<li>
+<a class="btn btn-ghost transition-smooth focus-visible" onclick="navigateTo(&#39;home&#39;)">
+<span>首页</span>
+</a>
+</li>
+<li>
+<a class="btn btn-ghost transition-smooth focus-visible" onclick="navigateTo(&#39;help_center_page&#39;)">
+<span>帮助中心</span>
+</a>
+</li>
+<li>
+<a class="btn btn-ghost transition-smooth focus-visible" onclick="navigateTo(&#39;about_us_page&#39;)">
+<span>关于我们</span>
+</a>
+</li>
+</ul>
+</div>
+
+<!-- Right Side: Search, Language, User Menu -->
+<div class="navbar-end gap-3">
+<!-- Language Switcher -->
+<div class="dropdown dropdown-end">
+<button tabindex="0" class="btn btn-ghost btn-sm transition-smooth focus-visible">
+<span class="iconify" data-icon="heroicons:globe-alt" data-width="20"></span>
+<span class="hidden lg:inline text-spacing">中文</span>
+</button>
+<ul tabindex="0" class="dropdown-content menu bg-base-100 text-base-content rounded-box z-10 w-32 p-2 shadow-elegant border border-base-300">
+<li>
+<a onclick="handleLanguageSwitch(&#39;zh&#39;)" class="transition-smooth">
+<span>中文</span>
+</a>
+</li>
+<li>
+<a onclick="handleLanguageSwitch(&#39;en&#39;)" class="transition-smooth">
+<span>English</span>
+</a>
+</li>
+</ul>
+</div>
+
+<!-- User Menu -->
+<div class="dropdown dropdown-end">
+<button tabindex="0" class="btn btn-ghost btn-sm transition-smooth focus-visible">
+<div class="avatar">
+<div class="w-8 rounded-full">
+<div class="avatar placeholder inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-content">
+<span class="flex items-center justify-center h-full font-semibold text-sm">用</span>
+</div>
+</div>
+</div>
+<span class="hidden lg:inline text-spacing">用户</span>
+</button>
+<ul tabindex="0" class="dropdown-content menu bg-base-100 text-base-content rounded-box z-10 w-48 p-2 shadow-elegant border border-base-300">
+<li>
+<a onclick="navigateTo(&#39;profile_settings_page&#39;)" class="transition-smooth">
+<span>个人设置</span>
+</a>
+</li>
+<li>
+<a onclick="navigateTo(&#39;submit_feedback_page&#39;)" class="transition-smooth">
+<span>提交反馈</span>
+</a>
+</li>
+<li class="divider"></li>
+<li>
+<a onclick="navigateTo(&#39;login_page&#39;)" class="transition-smooth">
+<span>登录</span>
+</a>
+</li>
+<li>
+<a onclick="navigateTo(&#39;register_page&#39;)" class="transition-smooth">
+<span>注册</span>
+</a>
+</li>
+</ul>
+</div>
+</div>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobile-menu" class="fixed inset-0 z-50 lg:hidden hidden bg-black/50 backdrop-blur-sm">
+<div class="fixed left-0 top-0 h-full w-80 bg-base-100 shadow-elegant">
+<div class="p-4 border-b border-base-300">
+<div class="flex items-center justify-between">
+<h2 class="text-lg font-semibold text-primary font-clean">导航菜单</h2>
+<button class="btn btn-ghost btn-sm focus-visible" onclick="toggleMobileMenu()">
+<span class="iconify" data-icon="heroicons:x-mark" data-width="24"></span>
+</button>
+</div>
+</div>
+<ul class="menu p-4 text-base-content space-y-2">
+<li>
+<a onclick="navigateTo(&#39;home&#39;)" class="transition-smooth">
+<span class="iconify text-primary" data-icon="heroicons:home" data-width="20"></span>
+<span>首页</span>
+</a>
+</li>
+<li>
+<a onclick="navigateTo(&#39;help_center_page&#39;)" class="transition-smooth">
+<span class="iconify text-primary" data-icon="heroicons:question-mark-circle" data-width="20"></span>
+<span>帮助中心</span>
+</a>
+</li>
+<li>
+<a onclick="navigateTo(&#39;about_us_page&#39;)" class="transition-smooth">
+<span class="iconify text-primary" data-icon="heroicons:information-circle" data-width="20"></span>
+<span>关于我们</span>
+</a>
+</li>
+<li>
+<a onclick="navigateTo(&#39;profile_settings_page&#39;)" class="transition-smooth">
+<span class="iconify text-primary" data-icon="heroicons:user-circle" data-width="20"></span>
+<span>个人设置</span>
+</a>
+</li>
+<li>
+<a onclick="navigateTo(&#39;login_page&#39;)" class="transition-smooth">
+<span class="iconify text-primary" data-icon="heroicons:arrow-right-on-rectangle" data-width="20"></span>
+<span>登录</span>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<style>
+[data-section-id="common_header"] {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+[data-section-id="common_header"] .navbar {
+min-height: 4rem;
+padding: 0 1.5rem;
+}
+
+[data-section-id="common_header"] .dropdown-content {
+margin-top: 0.5rem;
+border: var(--border) solid var(--color-base-300);
+}
+
+[data-section-id="common_header"] .menu li > a {
+transition: all 0.2s ease-in-out;
+border-radius: var(--radius-field);
+}
+
+[data-section-id="common_header"] .menu li > a:hover {
+background-color: var(--color-base-200);
+color: var(--color-primary);
+transform: translateY(-1px);
+}
+
+[data-section-id="common_header"] #mobile-menu {
+backdrop-filter: blur(8px);
+}
+
+[data-section-id="common_header"] .focus-visible:focus-visible {
+outline: 2px solid var(--color-accent);
+outline-offset: 2px;
+border-radius: var(--radius-field);
+}
+
+[data-section-id="common_header"] .text-spacing {
+letter-spacing: 0.025em;
+}
+</style>
+
+<script>
+(function() {
+// Header-specific JavaScript functionality
+
+// Close mobile menu when clicking outside
+document.addEventListener(&#39;click&#39;, function(e) {
+const mobileMenu = document.querySelector(&#39;#mobile-menu&#39;);
+const menuToggle = document.querySelector(&#39;[onclick="toggleMobileMenu()"]&#39;);
+if (mobileMenu &amp;&amp; !mobileMenu.classList.contains(&#39;hidden&#39;)) {
+const menuContent = mobileMenu.querySelector(&#39;.fixed.left-0&#39;);
+if (!menuContent.contains(e.target) &amp;&amp; !menuToggle.contains(e.target)) {
+mobileMenu.classList.add(&#39;hidden&#39;);
+}
+}
+});
+
+// Set active navigation state
+window.setActiveNavigation = function(pageId) {
+// Remove active states
+const navLinks = document.querySelectorAll(&#39;[data-section-id="common_header"] .menu a&#39;);
+navLinks.forEach(link => {
+link.classList.remove(&#39;active&#39;);
+});
+
+// Add active state for current page
+const activeMapping = {
+&#39;home&#39;: &#39;home&#39;,
+&#39;help_center_page&#39;: &#39;help_center_page&#39;,
+&#39;about_us_page&#39;: &#39;about_us_page&#39;
+};
+
+if (activeMapping[pageId]) {
+const activeLink = document.querySelector(`[onclick="navigateTo(&#39;${activeMapping[pageId]}&#39;)"]`);
+if (activeLink) {
+activeLink.classList.add(&#39;active&#39;);
+}
+}
+};
+
+// Initialize header functionality
+document.addEventListener(&#39;DOMContentLoaded&#39;, function() {
+// Add smooth scroll behavior
+document.documentElement.style.scrollBehavior = &#39;smooth&#39;;
+
+// Close dropdowns when clicking outside
+document.addEventListener(&#39;click&#39;, function(e) {
+const dropdowns = document.querySelectorAll(&#39;[data-section-id="common_header"] .dropdown&#39;);
+dropdowns.forEach(dropdown => {
+if (!dropdown.contains(e.target)) {
+const content = dropdown.querySelector(&#39;.dropdown-content&#39;);
+if (content) {
+content.classList.add(&#39;hidden&#39;);
+}
+}
+});
+});
+});
+
+})();
+</script><!-- 主体内容 -->
+    <div class="flex-1">
+      <!-- 核心功能引导区 -->
+      <section id="hero-section" data-type="section" class="section-spacing bg-gradient-to-br from-base-100 to-base-200/50">
+        <div class="content-spacing text-center i9ka6c spark-custom-i9ka6c" id="i9ka6c">
+          <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl lg:text-6xl font-bold text-base-content mb-6 text-spacing">
+              即时、精准、智能翻译
+            </h1>
+            <p class="text-xl lg:text-2xl text-base-content/80 mb-8 text-spacing">
+              涵盖英、日、韩语，告别语言障碍
+            </p>
+            <div class="flex justify-center items-center gap-8 mb-8">
+              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <span class="iconify text-primary" data-icon="heroicons:language" data-width="32"></span>
+              </div>
+              <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
+                <span class="iconify text-accent" data-icon="heroicons:bolt" data-width="32"></span>
+              </div>
+              <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center">
+                <span class="iconify text-secondary" data-icon="heroicons:shield-check" data-width="32"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 翻译操作区 -->
+      <section id="translation-section" data-type="section" class="section-spacing">
+        <div class="content-spacing">
+          <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <!-- 输入区域 -->
+              <div class="translation-container p-8">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-base-content">
+                    输入文本
+                  </h3>
+                  <div class="flex items-center gap-2">
+                    <span id="char-count" class="text-sm text-base-content/60">0/1000</span><button data-type="button" class="btn btn-ghost btn-sm" onclick="clearInput()">
+                      <span class="iconify" data-icon="heroicons:x-mark" data-width="16"></span>
+                      清除
+                    </button>
+                  </div>
+                </div>
+                <textarea id="source-text" placeholder="请输入要翻译的中文文本..." maxlength="1000" data-type="input" class="textarea textarea-bordered w-full h-48 resize-none text-spacing focus-visible source-text spark-custom-source-text" oninput="updateCharCount()"></textarea>
+              </div>
+              <!-- 输出区域 -->
+              <div class="translation-container p-8">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-base-content">
+                    翻译结果
+                  </h3>
+                  <button data-type="button" class="btn btn-ghost btn-sm" onclick="copyResult()">
+                    <span class="iconify" data-icon="heroicons:clipboard-document" data-width="16"></span>
+                    复制
+                  </button>
+                </div>
+                <textarea id="target-text" placeholder="翻译结果将在此显示..." readonly="" data-type="output" class="textarea textarea-bordered w-full h-48 resize-none text-spacing bg-base-200/50"></textarea>
+              </div>
+            </div>
+            <!-- 语言选择和操作按钮 -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mt-8">
+              <!-- 语言选择器 -->
+              <div class="flex items-center gap-4">
+                <span class="text-base font-medium text-base-content">目标语言：</span>
+                <div data-type="container" class="flex gap-2">
+                  <button data-lang="en" data-type="button" class="language-selector btn btn-outline btn-primary language-btn active" onclick="selectLanguage(&#39;en&#39;)">
+                    <span class="iconify" data-icon="heroicons:globe-alt" data-width="16"></span>
+                    英语</button><button data-lang="ja" data-type="button" class="language-selector btn btn-outline btn-primary language-btn" onclick="selectLanguage(&#39;ja&#39;)">
+                    <span class="iconify" data-icon="heroicons:globe-alt" data-width="16"></span>
+                    日语</button><button data-lang="ko" data-type="button" class="language-selector btn btn-outline btn-primary language-btn" onclick="selectLanguage(&#39;ko&#39;)">
+                    <span class="iconify" data-icon="heroicons:globe-alt" data-width="16"></span>
+                    韩语
+                  </button>
+                </div>
+              </div>
+              <!-- 翻译按钮 --><button data-type="button" class="btn btn-primary btn-lg gap-2 transition-smooth" onclick="performTranslation()">
+                <span class="iconify" data-icon="heroicons:arrow-path" data-width="20"></span>
+                翻译
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 提示与特色功能区 -->
+      <section id="features-section" data-type="section" class="section-spacing bg-base-200/30">
+        <div class="content-spacing">
+          <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <!-- 速度快 -->
+              <div data-type="container" class="card bg-base-100 shadow-minimal transition-smooth hover:shadow-elegant">
+                <div class="card-body text-center p-8">
+                  <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="iconify text-primary" data-icon="heroicons:bolt" data-width="32"></span>
+                  </div>
+                  <h3 class="card-title text-xl font-semibold mb-3 justify-center">
+                    速度快
+                  </h3>
+                  <p class="text-base-content/80 text-spacing">
+                    采用先进的AI技术，毫秒级响应，让翻译如闪电般迅速，提升您的工作效率。
+                  </p>
+                </div>
+              </div>
+              <!-- 准确高 -->
+              <div data-type="container" class="card bg-base-100 shadow-minimal transition-smooth hover:shadow-elegant">
+                <div class="card-body text-center p-8">
+                  <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="iconify text-accent" data-icon="heroicons:check-badge" data-width="32"></span>
+                  </div>
+                  <h3 class="card-title text-xl font-semibold mb-3 justify-center">
+                    准确高
+                  </h3>
+                  <p class="text-base-content/80 text-spacing">
+                    基于大规模语料库训练，深度理解语言语境，确保翻译结果准确自然，符合目标语言习惯。
+                  </p>
+                </div>
+              </div>
+              <!-- 数据安全 -->
+              <div data-type="container" class="card bg-base-100 shadow-minimal transition-smooth hover:shadow-elegant">
+                <div class="card-body text-center p-8">
+                  <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="iconify text-secondary" data-icon="heroicons:shield-check" data-width="32"></span>
+                  </div>
+                  <h3 class="card-title text-xl font-semibold mb-3 justify-center">
+                    数据安全
+                  </h3>
+                  <p class="text-base-content/80 text-spacing">
+                    采用端到端加密技术，严格保护用户隐私，翻译内容不会被存储或泄露，确保信息安全。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- 页脚 --><div data-section-id="common_footer" data-section-type="common_footer" class="bg-base-200 text-base-content font-clean">
+<!-- Main Footer Content -->
+<footer class="footer lg:footer-horizontal p-10 section-spacing">
+<!-- Logo and Description -->
+<aside class="lg:items-start">
+<div class="flex items-center gap-3 mb-4">
+<span class="iconify text-primary" data-icon="heroicons:language" data-width="40"></span>
+<div>
+<h3 class="text-lg font-bold text-primary">智能翻译</h3>
+<p class="text-sm opacity-75 text-spacing">精准、快速、可靠的翻译服务</p>
+</div>
+</div>
+<p class="max-w-md text-sm text-spacing">
+为用户提供中文到英语、日语、韩语的高质量翻译服务，
+界面简洁易用，翻译准确可靠，是您语言交流的得力助手。
+</p>
+</aside>
+
+<!-- Quick Links -->
+<nav>
+<header class="footer-title text-primary">快速链接</header>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;home&#39;)">
+<span>翻译首页</span>
+</a>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;help_center_page&#39;)">
+<span>帮助中心</span>
+</a>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;submit_feedback_page&#39;)">
+<span>提交反馈</span>
+</a>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;about_us_page&#39;)">
+<span>关于我们</span>
+</a>
+</nav>
+
+<!-- User Account -->
+<nav>
+<header class="footer-title text-primary">用户中心</header>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;login_page&#39;)">
+<span>用户登录</span>
+</a>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;register_page&#39;)">
+<span>注册账户</span>
+</a>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;profile_settings_page&#39;)">
+<span>个人设置</span>
+</a>
+</nav>
+
+<!-- Legal and Support -->
+<nav>
+<header class="footer-title text-primary">法律信息</header>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;terms_of_service_page&#39;)">
+<span>服务条款</span>
+</a>
+<a class="link link-hover transition-smooth" onclick="navigateTo(&#39;privacy_policy_page&#39;)">
+<span>隐私政策</span>
+</a>
+<div class="mt-4">
+<div class="flex items-center gap-2 text-sm">
+<span class="iconify text-accent" data-icon="heroicons:envelope" data-width="16"></span>
+<span>邮箱：support@translation.com</span>
+</div>
+</div>
+</nav>
+</footer>
+
+<!-- Copyright Footer -->
+<footer class="footer footer-center p-6 bg-base-300 text-base-content border-t border-base-content/10">
+<aside class="flex flex-col lg:flex-row items-center gap-4">
+<p class="text-sm text-spacing">
+© 2025 智能翻译. 保留所有权利. | 致力于提供优质的翻译服务
+</p>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="iconify text-success" data-icon="heroicons:shield-check" data-width="16"></span>
+<span class="text-sm">安全可靠</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="iconify text-primary" data-icon="heroicons:globe-alt" data-width="16"></span>
+<span class="text-sm">多语言支持</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="iconify text-accent" data-icon="heroicons:bolt" data-width="16"></span>
+<span class="text-sm">即时翻译</span>
+</div>
+</div>
+</aside>
+</footer>
+
+<!-- Quick Access Toolbar -->
+<div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+<div class="tooltip tooltip-left" data-tip="返回顶部">
+<button class="btn btn-circle btn-primary shadow-elegant transition-smooth focus-visible" onclick="scrollToTop()">
+<span class="iconify" data-icon="heroicons:arrow-up" data-width="20"></span>
+</button>
+</div>
+<div class="tooltip tooltip-left" data-tip="提交反馈">
+<button class="btn btn-circle btn-secondary shadow-elegant transition-smooth focus-visible" onclick="navigateTo(&#39;submit_feedback_page&#39;)">
+<span class="iconify" data-icon="heroicons:chat-bubble-left-right" data-width="20"></span>
+</button>
+</div>
+</div>
+</div>
+
+<style>
+[data-section-id="common_footer"] {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+[data-section-id="common_footer"] .footer-title {
+color: var(--color-primary);
+font-weight: 600;
+margin-bottom: 1rem;
+font-size: 1rem;
+}
+
+[data-section-id="common_footer"] .link-hover {
+transition: all 0.2s ease-in-out;
+border-radius: var(--radius-field);
+padding: 0.25rem 0;
+}
+
+[data-section-id="common_footer"] .link-hover:hover {
+color: var(--color-primary);
+text-decoration: underline;
+transform: translateX(4px);
+}
+
+[data-section-id="common_footer"] .btn-circle {
+transition: all 0.3s ease-in-out;
+}
+
+[data-section-id="common_footer"] .btn-circle:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+[data-section-id="common_footer"] .text-spacing {
+letter-spacing: 0.025em;
+line-height: 1.6;
+}
+
+[data-section-id="common_footer"] .section-spacing {
+padding: 3rem 1.5rem;
+}
+</style>
+
+<script>
+(function() {
+// Footer-specific JavaScript functionality
+
+// Scroll to top function with smooth animation
+window.scrollToTop = function() {
+window.scrollTo({
+top: 0,
+behavior: &#39;smooth&#39;
+});
+};
+
+// Show/hide quick access buttons based on scroll position
+function handleScrollVisibility() {
+const quickAccess = document.querySelector(&#39;[data-section-id="common_footer"] .fixed.bottom-6&#39;);
+if (quickAccess) {
+if (window.scrollY > 500) {
+quickAccess.style.opacity = &#39;1&#39;;
+quickAccess.style.visibility = &#39;visible&#39;;
+quickAccess.style.transform = &#39;translateY(0)&#39;;
+} else {
+quickAccess.style.opacity = &#39;0&#39;;
+quickAccess.style.visibility = &#39;hidden&#39;;
+quickAccess.style.transform = &#39;translateY(20px)&#39;;
+}
+}
+}
+
+// Throttled scroll event handler for better performance
+let scrollTimeout;
+document.addEventListener(&#39;scroll&#39;, function() {
+if (scrollTimeout) {
+clearTimeout(scrollTimeout);
+}
+scrollTimeout = setTimeout(handleScrollVisibility, 10);
+});
+
+// Initialize quick access buttons as hidden
+document.addEventListener(&#39;DOMContentLoaded&#39;, function() {
+const quickAccess = document.querySelector(&#39;[data-section-id="common_footer"] .fixed.bottom-6&#39;);
+if (quickAccess) {
+quickAccess.style.transition = &#39;all 0.3s ease-in-out&#39;;
+quickAccess.style.opacity = &#39;0&#39;;
+quickAccess.style.visibility = &#39;hidden&#39;;
+quickAccess.style.transform = &#39;translateY(20px)&#39;;
+}
+
+// Initial scroll check
+handleScrollVisibility();
+});
+
+// Enhanced feedback for quick action buttons
+window.APP_GLOBALS = window.APP_GLOBALS || {};
+window.APP_GLOBALS.footer = {
+showQuickFeedback: function(message) {
+console.log(&#39;快速操作反馈:&#39;, message);
+// This could be enhanced to show actual toast notifications
+}
+};
+
+})();
+</script><script>
+/* JavaScript code for common usage, wrapped in a closure */
+(function() {
+// Extend global namespace incrementally
+window.APP_GLOBALS = window.APP_GLOBALS || {};
+
+// Navigation function for page transitions
+window.navigateTo = function(targetPageId) {
+const isInIframe = window.self !== window.top;
+const targetFileName = `${targetPageId}.html`;
+
+if (isInIframe) {
+window.parent.postMessage({
+type: &#39;iframeNavigation&#39;,
+targetPageId: targetPageId
+}, &#39;*&#39;);
+} else {
+window.location.href = targetFileName;
+}
+};
+
+// Translation functionality
+window.APP_GLOBALS.translation = {
+// Handle translation request
+performTranslation: function(sourceText, targetLanguage) {
+if (!sourceText.trim()) {
+console.log(&#39;请输入要翻译的文本&#39;);
+return;
+}
+console.log(`翻译文本: "${sourceText}" 到 ${targetLanguage}`);
+// Implementation would integrate with translation API
+},
+
+// Language switcher for translation
+switchTranslationLanguage: function(language) {
+const languageMap = {
+&#39;en&#39;: &#39;英语&#39;,
+&#39;ja&#39;: &#39;日语&#39;,
+&#39;ko&#39;: &#39;韩语&#39;
+};
+console.log(`切换翻译语言至: ${languageMap[language] || language}`);
+// Store preference
+localStorage.setItem(&#39;translation_target_language&#39;, language);
+},
+
+// Get saved translation language preference
+getSavedLanguage: function() {
+return localStorage.getItem(&#39;translation_target_language&#39;) || &#39;en&#39;;
+}
+};
+
+// User authentication functions
+window.APP_GLOBALS.auth = {
+// Handle user login
+handleLogin: function() {
+const emailInput = document.querySelector(&#39;#login-email&#39;);
+const passwordInput = document.querySelector(&#39;#login-password&#39;);
+
+if (emailInput &amp;&amp; passwordInput) {
+const email = emailInput.value.trim();
+const password = passwordInput.value.trim();
+
+if (!email || !password) {
+console.log(&#39;请填写所有必填字段&#39;);
+return;
+}
+
+console.log(&#39;处理登录请求:&#39;, email);
+// Implementation would integrate with authentication API
+navigateTo(&#39;home&#39;);
+}
+},
+
+// Handle user registration
+handleRegister: function() {
+const emailInput = document.querySelector(&#39;#register-email&#39;);
+const passwordInput = document.querySelector(&#39;#register-password&#39;);
+const confirmPasswordInput = document.querySelector(&#39;#register-confirm-password&#39;);
+const agreeTermsCheckbox = document.querySelector(&#39;#agree-terms&#39;);
+
+if (emailInput &amp;&amp; passwordInput &amp;&amp; confirmPasswordInput &amp;&amp; agreeTermsCheckbox) {
+const email = emailInput.value.trim();
+const password = passwordInput.value.trim();
+const confirmPassword = confirmPasswordInput.value.trim();
+const agreeTerms = agreeTermsCheckbox.checked;
+
+if (!email || !password || !confirmPassword) {
+console.log(&#39;请填写所有必填字段&#39;);
+return;
+}
+
+if (password !== confirmPassword) {
+console.log(&#39;密码确认不匹配&#39;);
+return;
+}
+
+if (!agreeTerms) {
+console.log(&#39;请同意服务条款&#39;);
+return;
+}
+
+console.log(&#39;处理注册请求:&#39;, email);
+// Implementation would integrate with authentication API
+navigateTo(&#39;home&#39;);
+}
+},
+
+// Handle logout
+handleLogout: function() {
+console.log(&#39;用户登出&#39;);
+// Clear user session
+localStorage.removeItem(&#39;user_session&#39;);
+navigateTo(&#39;home&#39;);
+}
+};
+
+// UI helper functions
+window.APP_GLOBALS.ui = {
+// Show loading state
+showLoading: function(elementId) {
+const element = document.querySelector(`#${elementId}`);
+if (element) {
+element.innerHTML = &#39;<span class="loading loading-spinner loading-md"></span>&#39;;
+element.disabled = true;
+}
+},
+
+// Hide loading state
+hideLoading: function(elementId, originalText) {
+const element = document.querySelector(`#${elementId}`);
+if (element) {
+element.innerHTML = originalText;
+element.disabled = false;
+}
+},
+
+// Show success message
+showSuccess: function(message) {
+console.log(&#39;成功:&#39;, message);
+// Implementation would show toast notification
+},
+
+// Show error message
+showError: function(message) {
+console.log(&#39;错误:&#39;, message);
+// Implementation would show error notification
+}
+};
+
+// Mobile menu toggle
+window.toggleMobileMenu = function() {
+const menu = document.querySelector(&#39;#mobile-menu&#39;);
+if (menu) {
+menu.classList.toggle(&#39;hidden&#39;);
+}
+};
+
+// Theme and language functions
+window.handleLanguageSwitch = function(lang) {
+localStorage.setItem(&#39;preferred_language&#39;, lang);
+console.log(&#39;切换界面语言至:&#39;, lang);
+};
+
+// Search functionality
+window.handleSearch = function() {
+const searchInput = document.querySelector(&#39;#search-input&#39;);
+if (searchInput &amp;&amp; searchInput.value.trim()) {
+console.log(&#39;搜索:&#39;, searchInput.value.trim());
+// Implementation would handle search logic
+}
+};
+
+// Initialize common functionality on page load
+document.addEventListener(&#39;DOMContentLoaded&#39;, function() {
+// Close dropdowns when clicking outside
+document.addEventListener(&#39;click&#39;, function(e) {
+const dropdowns = document.querySelectorAll(&#39;.dropdown-content, .menu&#39;);
+dropdowns.forEach(dropdown => {
+if (!dropdown.contains(e.target) &amp;&amp; !dropdown.previousElementSibling?.contains(e.target)) {
+dropdown.classList.add(&#39;hidden&#39;);
+}
+});
+});
+
+// Handle Enter key for search
+const searchInputs = document.querySelectorAll(&#39;input[type="search"], #search-input&#39;);
+searchInputs.forEach(input => {
+input.addEventListener(&#39;keypress&#39;, function(e) {
+if (e.key === &#39;Enter&#39;) {
+handleSearch();
+}
+});
+});
+
+// Initialize translation language preference
+const savedLanguage = window.APP_GLOBALS.translation.getSavedLanguage();
+if (savedLanguage) {
+window.APP_GLOBALS.translation.switchTranslationLanguage(savedLanguage);
+}
+});
+
+})();
+</script><script>
+/* 翻译页面专用脚本 */
+(function() {
+let currentLanguage = &#39;en&#39;;
+let isTranslating = false;
+
+// 更新字符计数
+window.updateCharCount = function() {
+const textarea = document.getElementById(&#39;source-text&#39;);
+const counter = document.getElementById(&#39;char-count&#39;);
+if (textarea &amp;&amp; counter) {
+const count = textarea.value.length;
+counter.textContent = `${count}/1000`;
+counter.style.color = count > 900 ? &#39;var(--color-warning)&#39; : &#39;var(--color-base-content)&#39;;
+}
+};
+
+// 清除输入
+window.clearInput = function() {
+const sourceText = document.getElementById(&#39;source-text&#39;);
+const targetText = document.getElementById(&#39;target-text&#39;);
+if (sourceText) {
+sourceText.value = &#39;&#39;;
+updateCharCount();
+}
+if (targetText) {
+targetText.value = &#39;&#39;;
+}
+showToast(&#39;输入已清除&#39;, &#39;info&#39;);
+};
+
+// 选择语言
+window.selectLanguage = function(lang) {
+currentLanguage = lang;
+
+// 更新按钮状态
+const buttons = document.querySelectorAll(&#39;.language-btn&#39;);
+buttons.forEach(btn => {
+btn.classList.remove(&#39;active&#39;);
+if (btn.dataset.lang === lang) {
+btn.classList.add(&#39;active&#39;);
+}
+});
+
+// 保存语言偏好
+localStorage.setItem(&#39;translation_target_language&#39;, lang);
+
+const languageNames = {
+&#39;en&#39;: &#39;英语&#39;,
+&#39;ja&#39;: &#39;日语&#39;, 
+&#39;ko&#39;: &#39;韩语&#39;
+};
+showToast(`已切换到${languageNames[lang]}`, &#39;success&#39;);
+};
+
+// 执行翻译
+window.performTranslation = function() {
+const sourceText = document.getElementById(&#39;source-text&#39;);
+const targetText = document.getElementById(&#39;target-text&#39;);
+const translateBtn = document.querySelector(&#39;.btn-primary&#39;);
+
+if (!sourceText || !targetText || !translateBtn) return;
+
+const text = sourceText.value.trim();
+if (!text) {
+showToast(&#39;请输入要翻译的文本&#39;, &#39;warning&#39;);
+sourceText.focus();
+return;
+}
+
+if (isTranslating) return;
+
+isTranslating = true;
+translateBtn.classList.add(&#39;loading&#39;);
+translateBtn.innerHTML = &#39;<span class="loading loading-spinner loading-sm"></span>翻译中...&#39;;
+
+// 模拟翻译过程
+setTimeout(() => {
+const mockTranslations = {
+&#39;en&#39;: {
+&#39;你好&#39;: &#39;Hello&#39;,
+&#39;谢谢&#39;: &#39;Thank you&#39;,
+&#39;再见&#39;: &#39;Goodbye&#39;,
+&#39;欢迎&#39;: &#39;Welcome&#39;,
+&#39;请问&#39;: &#39;Excuse me&#39;
+},
+&#39;ja&#39;: {
+&#39;你好&#39;: &#39;こんにちは&#39;,
+&#39;谢谢&#39;: &#39;ありがとう&#39;,
+&#39;再见&#39;: &#39;さようなら&#39;,
+&#39;欢迎&#39;: &#39;いらっしゃいませ&#39;,
+&#39;请问&#39;: &#39;すみません&#39;
+},
+&#39;ko&#39;: {
+&#39;你好&#39;: &#39;안녕하세요&#39;,
+&#39;谢谢&#39;: &#39;감사합니다&#39;,
+&#39;再见&#39;: &#39;안녕히 가세요&#39;,
+&#39;欢迎&#39;: &#39;환영합니다&#39;,
+&#39;请问&#39;: &#39;실례합니다&#39;
+}
+};
+
+// 简单的模拟翻译逻辑
+let result = mockTranslations[currentLanguage][text] || `[${currentLanguage.toUpperCase()}] ${text}`;
+
+targetText.value = result;
+showToast(&#39;翻译完成&#39;, &#39;success&#39;);
+
+// 恢复按钮状态
+isTranslating = false;
+translateBtn.classList.remove(&#39;loading&#39;);
+translateBtn.innerHTML = &#39;<span class="iconify" data-icon="heroicons:arrow-path" data-width="20"></span>翻译&#39;;
+}, 1500);
+};
+
+// 复制结果
+window.copyResult = function() {
+const targetText = document.getElementById(&#39;target-text&#39;);
+if (!targetText || !targetText.value.trim()) {
+showToast(&#39;暂无翻译结果可复制&#39;, &#39;warning&#39;);
+return;
+}
+
+navigator.clipboard.writeText(targetText.value).then(() => {
+showToast(&#39;翻译结果已复制到剪贴板&#39;, &#39;success&#39;);
+}).catch(() => {
+// 降级方案
+targetText.select();
+document.execCommand(&#39;copy&#39;);
+showToast(&#39;翻译结果已复制&#39;, &#39;success&#39;);
+});
+};
+
+// 显示提示消息
+function showToast(message, type = &#39;info&#39;) {
+// 移除现有的toast
+const existingToast = document.querySelector(&#39;.toast&#39;);
+if (existingToast) {
+existingToast.remove();
+}
+
+const toast = document.createElement(&#39;div&#39;);
+toast.className = `toast toast-top toast-end z-50`;
+
+const alertClass = type === &#39;success&#39; ? &#39;alert-success&#39; : 
+type === &#39;warning&#39; ? &#39;alert-warning&#39; : 
+type === &#39;error&#39; ? &#39;alert-error&#39; : &#39;alert-info&#39;;
+
+toast.innerHTML = `
+<div class="alert ${alertClass} shadow-lg">
+<span class="iconify" data-icon="heroicons:${type === &#39;success&#39; ? &#39;check-circle&#39; : type === &#39;warning&#39; ? &#39;exclamation-triangle&#39; : type === &#39;error&#39; ? &#39;x-circle&#39; : &#39;information-circle&#39;}" data-width="20"></span>
+<span>${message}</span>
+</div>
+`;
+
+document.body.appendChild(toast);
+
+// 3秒后自动移除
+setTimeout(() => {
+if (toast.parentNode) {
+toast.remove();
+}
+}, 3000);
+}
+
+// 页面初始化
+document.addEventListener(&#39;DOMContentLoaded&#39;, function() {
+// 恢复保存的语言偏好
+const savedLanguage = localStorage.getItem(&#39;translation_target_language&#39;) || &#39;en&#39;;
+selectLanguage(savedLanguage);
+
+// 初始化字符计数
+updateCharCount();
+
+// 添加键盘快捷键
+document.addEventListener(&#39;keydown&#39;, function(e) {
+// Ctrl/Cmd + Enter 执行翻译
+if ((e.ctrlKey || e.metaKey) &amp;&amp; e.key === &#39;Enter&#39;) {
+e.preventDefault();
+performTranslation();
+}
+// Ctrl/Cmd + K 清除输入
+if ((e.ctrlKey || e.metaKey) &amp;&amp; e.key === &#39;k&#39;) {
+e.preventDefault();
+clearInput();
+}
+});
+
+// 输入框自动调整高度
+const sourceTextarea = document.getElementById(&#39;source-text&#39;);
+if (sourceTextarea) {
+sourceTextarea.addEventListener(&#39;input&#39;, function() {
+this.style.height = &#39;auto&#39;;
+this.style.height = Math.min(this.scrollHeight, 300) + &#39;px&#39;;
+});
+}
+});
+
+})();
+</script>
+  
+
+<script>
+    setTimeout(() => {
+      Holder.run({
+        domain: "placehold.co"
+      })
+    }, 100)
+  </script></body></html>'></iframe>
+                    </div>
+                  </div>
+
+                </body>
+                </html>
+            
